@@ -133,12 +133,11 @@ export default function App() {
   };
 
   const handleSpeak = () => {
-    if (resultText) {
-      setIsTalking(true);
-      speakText(resultText);
-      // 再生完了は end イベントで検知可能だが、簡易のため短い遅延でリセット
-      setTimeout(() => setIsTalking(false), 1500);
-    }
+    if (!resultText) return;
+    // iOS Safari: speak() はタップと同一の同期スタックで呼ぶ必要がある（setState より先に実行）
+    speakText(resultText);
+    setIsTalking(true);
+    setTimeout(() => setIsTalking(false), 2000);
   };
 
   const resetApp = () => {
@@ -176,7 +175,7 @@ export default function App() {
             {gateError && <p className="text-red-500 text-sm text-center">{gateError}</p>}
             <button
               type="submit"
-              className="w-full py-3 rounded-xl bg-green-500 text-white font-bold text-lg hover:bg-green-600 transition-colors"
+              className="w-full py-3 rounded-xl bg-green-500 text-white font-bold text-lg hover:bg-green-600 active:scale-[0.98] active:bg-green-700 transition-transform duration-100"
             >
               はいる
             </button>
@@ -240,7 +239,7 @@ export default function App() {
             {selectedImage && appState !== AppState.ANALYZING && (
               <button 
                 onClick={(e) => { e.stopPropagation(); resetApp(); }}
-                className="absolute -top-3 -right-3 bg-white rounded-full p-2 shadow-md border border-orange-200 hover:bg-orange-50"
+                className="absolute -top-3 -right-3 bg-white rounded-full p-2 shadow-md border border-orange-200 hover:bg-orange-50 active:scale-90 transition-transform duration-100"
               >
                 <RefreshIcon />
               </button>
@@ -276,15 +275,17 @@ export default function App() {
         {/* 3. Action Buttons */}
         <div className="flex md:flex-col gap-3 sm:gap-4 flex-shrink-0">
           
-          {/* Blue Button: Sound */}
+          {/* Blue Button: Sound（押下感 + 再生中は少し凹んだまま） */}
           <button 
             onClick={handleSpeak}
             disabled={appState !== AppState.RESULT_SHOWN}
             className={`
               w-16 h-16 sm:w-24 sm:h-24 rounded-2xl sm:rounded-3xl shadow-lg flex items-center justify-center flex-shrink-0
-              transition-all duration-200
+              transition-transform duration-100 ease-out
+              active:scale-95 active:shadow-md
+              ${isTalking ? 'scale-95 shadow-md' : ''}
               ${appState === AppState.RESULT_SHOWN 
-                ? 'bg-sky-400 hover:bg-sky-500 hover:scale-105 cursor-pointer shadow-sky-200' 
+                ? 'bg-sky-400 hover:bg-sky-500 hover:scale-105 cursor-pointer shadow-sky-200 active:bg-sky-600' 
                 : 'bg-gray-300 cursor-not-allowed opacity-50'}
             `}
           >
@@ -297,10 +298,11 @@ export default function App() {
             disabled={!selectedImage || appState === AppState.ANALYZING || appState === AppState.RESULT_SHOWN}
             className={`
               w-16 h-16 sm:w-24 sm:h-24 rounded-2xl sm:rounded-3xl shadow-lg flex items-center justify-center flex-shrink-0
-              transition-all duration-200
+              transition-transform duration-100 ease-out
+              active:scale-95 active:shadow-md
               ${(!selectedImage || appState === AppState.ANALYZING || appState === AppState.RESULT_SHOWN)
                 ? 'bg-gray-300 cursor-not-allowed opacity-50'
-                : 'bg-green-500 hover:bg-green-600 hover:scale-105 cursor-pointer shadow-green-200 animate-pulse'}
+                : 'bg-green-500 hover:bg-green-600 hover:scale-105 cursor-pointer shadow-green-200 animate-pulse active:bg-green-700'}
             `}
           >
              {appState === AppState.ANALYZING ? (
