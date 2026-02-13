@@ -36,6 +36,17 @@ jobs:
         env:
           VITE_BASE_PATH: /${{ github.event.repository.name }}/
 
+      - name: Verify built index.html
+        run: |
+          if grep -q 'index.tsx' dist/index.html; then
+            echo "::error::dist/index.html still references index.tsx - build may not have applied base path"
+            cat dist/index.html
+            exit 1
+          fi
+          echo "Built index.html uses hashed assets:"
+          grep -o 'src="[^"]*"' dist/index.html || true
+          grep -o 'href="[^"]*"' dist/index.html || true
+
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
