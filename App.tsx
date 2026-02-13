@@ -3,7 +3,7 @@ import { Bear } from './components/Bear';
 import { CloudBackground } from './components/CloudBackground';
 import { Flower } from './components/Flower';
 import { identifyObject, setAgentifyAuthKey } from './services/agentifyService';
-import { speakText } from './services/speechService';
+import { speakText, warmUp } from './services/speechService';
 import { AppState } from './types';
 
 // AuthKey（32文字hex）。短い形は Base64 で 22 文字: yCfXeF0tRoudkT+Foj5/TQ
@@ -86,6 +86,8 @@ export default function App() {
       return;
     }
     setAgentifyAuthKey(key);
+    // iOS Safari: 最初のユーザー操作内で speechSynthesis をウォームアップ
+    warmUp();
     try {
       sessionStorage.setItem(GATE_STORAGE_KEY, key);
     } catch {}
@@ -134,7 +136,8 @@ export default function App() {
 
   const handleSpeak = () => {
     if (!resultText) return;
-    // iOS Safari: speak() はタップと同一の同期スタックで呼ぶ必要がある（setState より先に実行）
+    // iOS Safari: タップイベント内で warmUp + speak を同期的に呼ぶ
+    warmUp();
     speakText(resultText);
     setIsTalking(true);
     setTimeout(() => setIsTalking(false), 2000);
