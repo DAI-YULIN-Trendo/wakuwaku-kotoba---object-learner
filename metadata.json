@@ -1,0 +1,8 @@
+{
+  "name": "WakuWaku Kotoba - Object Learner",
+  "description": "A cute, interactive Japanese Hiragana learning app for children using Gemini Vision and TTS.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
