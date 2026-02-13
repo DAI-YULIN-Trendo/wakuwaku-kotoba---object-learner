@@ -4,7 +4,7 @@
  * トークンは「パスワード（AuthKey）」+ AuthSecret で組み立て。ページ先頭で入力したパスワードを AuthKey として挿入。
  */
 
-const DEFAULT_HOST = 'https://lingda.agentspro.cn';
+const DEFAULT_HOST = 'https://agentify.jp';
 const DEFAULT_AGENT_ID = 'c827d7785d2d468b9d913f85a23e7f4d';
 const AUTH_SECRET = import.meta.env.VITE_AGENTIFY_AUTH_SECRET ?? 'CXlzOuQuAzt6nUf38vNZ3hTrogfLM2VZ';
 
