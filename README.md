@@ -16,7 +16,7 @@
 
 ## GitHub Pages にデプロイ
 
-1. リポジトリの **Settings → Pages** で、Source を **GitHub Actions** に設定
+1. リポジトリの **Settings → Pages** で、**Build and deployment → Source** を **GitHub Actions** に設定（必ず。Branch のままだと index.tsx を読もうとして白画面になる）
 2. `main` に push すると自動でビルド・デプロイ
 3. 公開 URL: `https://<username>.github.io/<repo-name>/`
 
