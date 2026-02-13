@@ -4,60 +4,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>WakuWaku Kotoba</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-      @import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap');
-      
-      body {
-        font-family: 'M PLUS Rounded 1c', sans-serif;
-        overflow-x: hidden;
-      }
-      
-      /* Custom Animations */
-      @keyframes float {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-10px); }
-      }
-      
-      @keyframes float-cloud {
-        0% { transform: translateX(-10%); }
-        100% { transform: translateX(110vw); }
-      }
-
-      @keyframes sway {
-        0%, 100% { transform: rotate(-8deg); }
-        50% { transform: rotate(8deg); }
-      }
-
-      .animate-float {
-        animation: float 3s ease-in-out infinite;
-      }
-      
-      .animate-cloud-slow {
-        animation: float-cloud 45s linear infinite;
-      }
-      
-      .animate-cloud-fast {
-        animation: float-cloud 25s linear infinite;
-      }
-
-      .animate-sway {
-        animation: sway 4s ease-in-out infinite;
-        transform-origin: bottom center;
-      }
-    </style>
-  <script type="importmap">
-{
-  "imports": {
-    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
-    "react/": "https://esm.sh/react@^19.2.4/",
-    "react": "https://esm.sh/react@^19.2.4"
-  }
-}
-</script>
-</head>
+  </head>
   <body class="bg-sky-100">
     <div id="root"></div>
-  <script type="module" src="/index.tsx"></script>
-</body>
+    <script type="module" src="/index.tsx"></script>
+  </body>
 </html>
