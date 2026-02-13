@@ -61,7 +61,7 @@ export const Bear: React.FC<BearProps> = ({ expression }) => {
   };
 
   return (
-    <div className={`relative w-24 h-24 sm:w-32 sm:h-32 transition-transform duration-300 ${expression === 'talking' ? 'animate-bounce' : 'animate-float'}`}>
+    <div className={`relative w-16 h-16 sm:w-24 sm:h-24 md:w-32 md:h-32 transition-transform duration-300 flex-shrink-0 ${expression === 'talking' ? 'animate-bounce' : 'animate-float'}`}>
       <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-xl overflow-visible">
         {/* Left Ear */}
         <g transform="translate(15, 10) rotate(-25)">

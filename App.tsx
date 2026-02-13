@@ -31,22 +31,22 @@ function normalizePasswordToAuthKey(input: string): string | null {
   return null;
 }
 
-// Icons
+// Icons（ボタン内でレスポンシブに縮小）
 const CameraIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+  <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 sm:h-12 sm:w-12 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
     <path strokeLinecap="round" strokeLinejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
     <path strokeLinecap="round" strokeLinejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
   </svg>
 );
 
 const SpeakerIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+  <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 sm:h-10 sm:w-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
     <path strokeLinecap="round" strokeLinejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
   </svg>
 );
 
 const CheckIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={4}>
+  <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 sm:h-12 sm:w-12 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={4}>
     <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
   </svg>
 );
@@ -124,7 +124,11 @@ export default function App() {
       // But let's say "Yay!" or something.
     } catch (error) {
       setAppState(AppState.ERROR);
-      setResultText('ごめんね、わからない');
+      const msg =
+        error instanceof Error && error.message === 'AGENT_NO_IMAGE'
+          ? 'ごめんね、がぞうが みえなかった'
+          : 'ごめんね、わからない';
+      setResultText(msg);
     }
   };
 
@@ -156,9 +160,9 @@ export default function App() {
 
   if (!unlocked) {
     return (
-      <div className="relative min-h-screen bg-gradient-to-b from-sky-200 to-green-100 flex flex-col items-center justify-center p-4 overflow-hidden">
+      <div className="relative min-h-screen min-h-[100dvh] w-full max-w-[100vw] bg-gradient-to-b from-sky-200 to-green-100 flex flex-col items-center justify-center p-4 overflow-x-hidden">
         <CloudBackground />
-        <div className="relative z-10 w-full max-w-sm bg-white rounded-3xl shadow-xl border-4 border-orange-200 p-6">
+        <div className="relative z-10 w-full max-w-[min(24rem,90vw)] bg-white rounded-3xl shadow-xl border-4 border-orange-200 p-4 sm:p-6 box-border">
           <h2 className="text-xl font-bold text-orange-500 text-center mb-4">パスワードをいれてね</h2>
           <form onSubmit={handleUnlock} className="flex flex-col gap-3">
             <input
@@ -183,18 +187,17 @@ export default function App() {
   }
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-b from-sky-200 to-green-100 flex flex-col items-center p-4 pb-40 overflow-hidden">
+    <div className="relative min-h-screen min-h-[100dvh] w-full max-w-[100vw] bg-gradient-to-b from-sky-200 to-green-100 flex flex-col items-center p-3 sm:p-4 pb-32 overflow-x-hidden overflow-y-auto">
       <CloudBackground />
 
       {/* Header / Prompt Bubble */}
-      {/* max-w-3xl to match the main content width below */}
-      <header className="mt-4 mb-8 w-full max-w-3xl relative z-10 flex flex-col items-center">
-        <div className="bg-white rounded-full px-4 sm:px-8 py-4 shadow-lg flex items-center gap-4 w-full border-4 border-white animate-bounce-slow">
+      <header className="mt-2 sm:mt-4 mb-4 sm:mb-6 w-full max-w-[min(48rem,100%)] relative z-10 flex flex-col items-center flex-shrink-0">
+        <div className="bg-white rounded-full px-3 sm:px-6 py-3 shadow-lg flex items-center gap-2 sm:gap-4 w-full max-w-full border-4 border-white animate-bounce-slow min-w-0">
            <div className="flex-shrink-0">
              <Bear expression={getBearExpression()} />
            </div>
-           <div className="flex-1 flex justify-center min-w-0">
-             <h1 className="text-xl sm:text-3xl font-bold text-orange-500 tracking-wider whitespace-nowrap text-center">
+           <div className="flex-1 flex justify-center items-center min-w-0 overflow-hidden">
+             <h1 className="text-base sm:text-2xl md:text-3xl font-bold text-orange-500 tracking-wider text-center break-words">
                {appState === AppState.IDLE && "がぞうを アップロード！"}
                {appState === AppState.IMAGE_SELECTED && "みどりのボタンをおしてね"}
                {appState === AppState.ANALYZING && "かんがえちゅう..."}
@@ -206,31 +209,30 @@ export default function App() {
       </header>
 
       {/* Main Interactive Area */}
-      {/* max-w-3xl ensures alignment with the header */}
-      <main className="flex-1 w-full max-w-3xl flex flex-col md:flex-row items-center justify-center gap-6 md:gap-10 z-10">
+      <main className="flex-1 w-full max-w-[min(48rem,100%)] flex flex-col md:flex-row items-center justify-center gap-4 md:gap-6 z-10 flex-shrink-0 min-h-0">
         
         {/* 1. Image Uploader Card */}
         <div 
-          className="relative group cursor-pointer flex-shrink-0"
+          className="relative group cursor-pointer flex-shrink-0 max-w-[85vw]"
           onClick={() => fileInputRef.current?.click()}
         >
           <div className={`
-            w-64 h-80 bg-white rounded-3xl border-4 border-dashed border-orange-300 shadow-xl 
-            flex flex-col items-center justify-center p-4 transition-all duration-300
-            ${!selectedImage ? 'hover:scale-105 hover:border-orange-400' : ''}
+            w-52 h-64 sm:w-64 sm:h-80 max-w-full bg-white rounded-2xl sm:rounded-3xl border-4 border-dashed border-orange-300 shadow-xl 
+            flex flex-col items-center justify-center p-3 transition-all duration-300 box-border
+            ${!selectedImage ? 'hover:scale-[1.02] hover:border-orange-400' : ''}
           `}>
             {selectedImage ? (
               <img 
                 src={selectedImage} 
                 alt="Uploaded" 
-                className="w-full h-full object-cover rounded-2xl"
+                className="w-full h-full object-cover rounded-xl sm:rounded-2xl min-w-0 min-h-0"
               />
             ) : (
               <>
-                <div className="w-24 h-24 bg-orange-400 rounded-full flex items-center justify-center mb-4">
+                <div className="w-16 h-16 sm:w-24 sm:h-24 bg-orange-400 rounded-full flex items-center justify-center mb-2 sm:mb-4 flex-shrink-0">
                   <CameraIcon />
                 </div>
-                <span className="text-2xl font-bold text-orange-500">おしてね</span>
+                <span className="text-xl sm:text-2xl font-bold text-orange-500">おしてね</span>
               </>
             )}
             
@@ -254,17 +256,17 @@ export default function App() {
         </div>
 
         {/* 2. Result Display */}
-        <div className="w-64 h-80 bg-white rounded-3xl shadow-xl flex flex-col items-center justify-center p-6 text-center transform transition-all duration-500 flex-shrink-0">
+        <div className="w-52 h-64 sm:w-64 sm:h-80 max-w-[85vw] bg-white rounded-2xl sm:rounded-3xl shadow-xl flex flex-col items-center justify-center p-4 sm:p-6 text-center transform transition-all duration-500 flex-shrink-0 box-border">
           {appState === AppState.RESULT_SHOWN ? (
-             <div className="animate-pop-in">
-               <span className="text-5xl font-extrabold text-slate-800 break-words leading-tight">
+             <div className="animate-pop-in w-full min-w-0 overflow-hidden">
+               <span className="text-3xl sm:text-5xl font-extrabold text-slate-800 break-words leading-tight block overflow-hidden text-ellipsis">
                  {resultText}
                </span>
              </div>
           ) : (
             <div className="flex flex-col items-center opacity-50">
-              <span className="text-9xl font-bold text-slate-800 mb-2">?</span>
-              <span className="text-xl font-bold text-green-600">
+              <span className="text-6xl sm:text-9xl font-bold text-slate-800 mb-1 sm:mb-2">?</span>
+              <span className="text-base sm:text-xl font-bold text-green-600">
                 {appState === AppState.ANALYZING ? "かんがえちゅう..." : "なにかな？"}
               </span>
             </div>
@@ -272,17 +274,17 @@ export default function App() {
         </div>
 
         {/* 3. Action Buttons */}
-        <div className="flex md:flex-col gap-4 flex-shrink-0">
+        <div className="flex md:flex-col gap-3 sm:gap-4 flex-shrink-0">
           
           {/* Blue Button: Sound */}
           <button 
             onClick={handleSpeak}
             disabled={appState !== AppState.RESULT_SHOWN}
             className={`
-              w-24 h-24 rounded-3xl shadow-lg flex items-center justify-center
+              w-16 h-16 sm:w-24 sm:h-24 rounded-2xl sm:rounded-3xl shadow-lg flex items-center justify-center flex-shrink-0
               transition-all duration-200
               ${appState === AppState.RESULT_SHOWN 
-                ? 'bg-sky-400 hover:bg-sky-500 hover:scale-110 cursor-pointer shadow-sky-200' 
+                ? 'bg-sky-400 hover:bg-sky-500 hover:scale-105 cursor-pointer shadow-sky-200' 
                 : 'bg-gray-300 cursor-not-allowed opacity-50'}
             `}
           >
@@ -294,11 +296,11 @@ export default function App() {
             onClick={handleAnalyze}
             disabled={!selectedImage || appState === AppState.ANALYZING || appState === AppState.RESULT_SHOWN}
             className={`
-              w-24 h-24 rounded-3xl shadow-lg flex items-center justify-center
+              w-16 h-16 sm:w-24 sm:h-24 rounded-2xl sm:rounded-3xl shadow-lg flex items-center justify-center flex-shrink-0
               transition-all duration-200
               ${(!selectedImage || appState === AppState.ANALYZING || appState === AppState.RESULT_SHOWN)
                 ? 'bg-gray-300 cursor-not-allowed opacity-50'
-                : 'bg-green-500 hover:bg-green-600 hover:scale-110 cursor-pointer shadow-green-200 animate-pulse'}
+                : 'bg-green-500 hover:bg-green-600 hover:scale-105 cursor-pointer shadow-green-200 animate-pulse'}
             `}
           >
              {appState === AppState.ANALYZING ? (

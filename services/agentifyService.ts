@@ -2,6 +2,10 @@
  * Agentify Open API v2 非流式チャットで画像から物体名（ひらがな）を取得。
  * 内部プロンプトは userChatInput で渡す。chatId は毎回空。
  * トークンは「パスワード（AuthKey）」+ AuthSecret で組み立て。ページ先頭で入力したパスワードを AuthKey として挿入。
+ *
+ * 注意: Agentify 側の Agent（例: child-app）で「画像入力」を受け取れるようにし、
+ * 視覚モデル（例: GPT-4o など画像対応 LLM）を使うように設定すること。
+ * そうしないと "I can't see images" のように画像なしで応答する。
  */
 
 const DEFAULT_HOST = 'https://agentify.jp';
@@ -56,5 +60,14 @@ export async function identifyObject(base64Image: string, _mimeType: string): Pr
     .map((c: { content: string }) => c.content);
   const text = textParts.join('').trim();
   if (!text) throw new Error('No text returned from agent');
+
+  // Agent が画像を見れない等で英文を返した場合はエラー扱い（ひらがな単語以外）
+  const looksLikeError =
+    /can't see|cannot see|I'm sorry|I don't|describe the image/i.test(text) ||
+    (text.length > 20 && /^[\x00-\x7F]+$/.test(text));
+  if (looksLikeError) {
+    throw new Error('AGENT_NO_IMAGE');
+  }
+
   return text;
 }
