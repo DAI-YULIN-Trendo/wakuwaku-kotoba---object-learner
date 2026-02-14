@@ -1,23 +1,19 @@
 /**
  * Agentify Open API v2 非流式チャットで画像から物体名（ひらがな）を取得。
- * 内部プロンプトは userChatInput で渡す。chatId は毎回空。
- * トークンは「パスワード（AuthKey）」+ AuthSecret で組み立て。ページ先頭で入力したパスワードを AuthKey として挿入。
+ * 拼图形式：AuthKey はユーザー入力（パスワード）をデコードしたもの。コードには書かない。
+ * token = authKey + '.' + authSecret。agentId も同じ値（ユーザーが入れた拼图）を使用。
  *
- * 注意: Agentify 側の Agent（例: child-app）で「画像入力」を受け取れるようにし、
- * 視覚モデル（例: GPT-4o など画像対応 LLM）を使うように設定すること。
- * そうしないと "I can't see images" のように画像なしで応答する。
+ * 注意: Agentify 側の Agent で「画像入力」＋視覚モデルを設定すること。
  */
 
 const DEFAULT_HOST = 'https://agentify.jp';
-const DEFAULT_AGENT_ID = 'c827d7785d2d468b9d913f85a23e7f4d';
 const AUTH_SECRET = import.meta.env.VITE_AGENTIFY_AUTH_SECRET ?? 'CXlzOuQuAzt6nUf38vNZ3hTrogfLM2VZ';
 
 const host = import.meta.env.VITE_AGENTIFY_HOST ?? DEFAULT_HOST;
-const agentId = import.meta.env.VITE_AGENTIFY_AGENT_ID ?? DEFAULT_AGENT_ID;
 
 let authKey: string | null = null;
 
-/** パスワード（AuthKey）を設定。API 呼び出し時に token = authKey + '.' + authSecret として使用 */
+/** 拼图：ユーザーが入力したパスワード（Base64 または hex）をデコードした AuthKey をセット */
 export function setAgentifyAuthKey(key: string): void {
   authKey = key;
 }
@@ -39,7 +35,7 @@ export async function identifyObject(base64Image: string, _mimeType: string): Pr
       Authorization: `Bearer ${getToken()}`,
     },
     body: JSON.stringify({
-      agentId,
+      agentId: authKey,
       chatId: null,
       userChatInput: IMAGE_PROMPT,
       images: [{ url: base64Image }],

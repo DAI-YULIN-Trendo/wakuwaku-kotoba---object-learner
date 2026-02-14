@@ -6,11 +6,12 @@ import { identifyObject, setAgentifyAuthKey } from './services/agentifyService';
 import { speakText, warmUp } from './services/speechService';
 import { AppState } from './types';
 
-// AuthKey（32文字hex）。短い形は Base64 で 22 文字: yCfXeF0tRoudkT+Foj5/TQ
-const AUTH_KEY_HEX = 'c827d7785d2d468b9d913f85a23e7f4d';
+// 拼图：只存前缀，完整 AuthKey 由用户输入的密码解码得到（不写入源码）
+// 密码可为 Base64 短码（如 yCfXeF0tRoudkT+Foj5/TQ）或 32 位 hex，解码/归一化后与前缀比对
+const AUTH_KEY_PREFIX = 'c827d7';
 const GATE_STORAGE_KEY = 'wakuwaku_gate';
 
-/** 入力が 32 文字 hex ならそのまま、Base64 なら decode して hex に。不正なら null */
+/** 输入为 32 位 hex 则返回，为 Base64 则解码为 hex。格式不对返回 null */
 function normalizePasswordToAuthKey(input: string): string | null {
   const s = input.trim();
   if (s.length === 32 && /^[0-9a-fA-F]+$/.test(s)) return s.toLowerCase();
@@ -29,6 +30,11 @@ function normalizePasswordToAuthKey(input: string): string | null {
     }
   }
   return null;
+}
+
+/** 仅用前缀校验，不暴露完整 key；通过则传入的 key 即为拼图后的 AuthKey */
+function isKeyPrefixMatch(hex: string): boolean {
+  return hex.length === 32 && hex.startsWith(AUTH_KEY_PREFIX);
 }
 
 // Icons（ボタン内でレスポンシブに縮小）
@@ -70,7 +76,7 @@ export default function App() {
   useEffect(() => {
     try {
       const stored = sessionStorage.getItem(GATE_STORAGE_KEY);
-      if (stored && stored === AUTH_KEY_HEX) {
+      if (stored && isKeyPrefixMatch(stored)) {
         setAgentifyAuthKey(stored);
         setUnlocked(true);
       }
@@ -81,7 +87,7 @@ export default function App() {
     e.preventDefault();
     setGateError('');
     const key = normalizePasswordToAuthKey(passwordInput);
-    if (key !== AUTH_KEY_HEX) {
+    if (!key || !isKeyPrefixMatch(key)) {
       setGateError('パスワードがちがいます');
       return;
     }
